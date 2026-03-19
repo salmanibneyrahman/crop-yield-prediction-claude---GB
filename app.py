@@ -531,11 +531,16 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
         crop_name = str(models['le_crop'].inverse_transform([original_code])[0])
 
         lr_probas = models['lr_display'].predict_proba(crop_features_scaled)[0]
-        top_5_indices = np.argsort(lr_probas)[-5:][::-1]
+        all_indices = np.argsort(lr_probas)[::-1]  # all crops sorted by probability
         top_5_crops = []
-        for idx in top_5_indices:
+        for idx in all_indices:
+            if len(top_5_crops) >= 5:
+                break
             orig = int(models['le_reencode'].inverse_transform([int(idx)])[0])
             name = str(models['le_crop'].inverse_transform([orig])[0])
+            # Skip if same as KNN's primary recommendation
+            if name.lower() == crop_name.lower():
+                continue
             conf = float(lr_probas[idx]) * 100
             top_5_crops.append((name, conf))
 
@@ -564,7 +569,7 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
         </div>
         """, unsafe_allow_html=True)
 
-        st.markdown('<div class="result-box"><h3 style="color: #00d4ff; font-size: 1.5em;">Top 5 Recommended Crops</h3>', unsafe_allow_html=True)
+        st.markdown('<div class="result-box"><h3 style="color: #00d4ff; font-size: 1.5em;">Top 5 Alternative Crops</h3>', unsafe_allow_html=True)
         for rank, (c_name, c_conf) in enumerate(top_5_crops, 1):
             bar_pct = min(c_conf, 100)
             bar_color = "#00ff88" if rank == 1 else "#00d4ff"
@@ -579,7 +584,7 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        st.markdown('<p style="color:#888; font-size:0.85em; margin-top:10px;">Primary prediction: KNN | Top 5 ranking: Gradient Boosting</p></div>', unsafe_allow_html=True)
+        st.markdown('<p style="color:#888; font-size:0.85em; margin-top:10px;">Primary prediction: KNN | Alternative ranking: Gradient Boosting</p></div>', unsafe_allow_html=True)
 
         st.markdown('<div class="result-box"><h3 style="color: #00d4ff; font-size: 1.5em;">Production Forecast</h3>', unsafe_allow_html=True)
         pc1, pc2, pc3 = st.columns(3)
