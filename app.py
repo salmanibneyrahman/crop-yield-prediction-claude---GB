@@ -182,6 +182,7 @@ def load_all():
             'crop_feature_columns': joblib.load('crop_feature_columns.pkl'),
             'district_soil_map': joblib.load('district_soil_map.pkl'),
             'available_districts': joblib.load('available_districts.pkl'),
+            'crop_timing': joblib.load('crop_timing.pkl'),
         }
     except Exception as e:
         st.error(f"Error loading models: {e}")
@@ -269,6 +270,47 @@ def get_current_season():
     # Rabi: October 16 - March 15
     else:
         return 'Rabi'
+
+def get_season_remaining_days():
+    """Calculate days remaining in current season"""
+    today = datetime.now()
+    month = today.month
+    day = today.day
+    
+    # Season end dates
+    # Kharif-1: ends June 30
+    # Kharif-2: ends October 15
+    # Rabi: ends March 15
+    
+    if (month == 3 and day >= 16) or month in [4, 5] or month == 6:
+        # Kharif-1: ends June 30
+        end = datetime(today.year, 6, 30)
+        season = 'Kharif 1'
+    elif month in [7, 8, 9] or (month == 10 and day <= 15):
+        # Kharif-2: ends October 15
+        end = datetime(today.year, 10, 15)
+        season = 'Kharif 2'
+    else:
+        # Rabi: ends March 15
+        if month >= 10:
+            end = datetime(today.year + 1, 3, 15)
+        else:
+            end = datetime(today.year, 3, 15)
+        season = 'Rabi'
+    
+    remaining = (end - today).days
+    return season, remaining
+
+def get_planting_warning(crop_name, season, remaining_days):
+    """Check if there's enough time to plant this crop"""
+    if remaining_days <= 7:
+        return "critical", f"CRITICAL: Only {remaining_days} days left in {season}. This crop may not survive the season change. Consider a crop from the next season."
+    elif remaining_days <= 21:
+        return "warning", f"WARNING: Only {remaining_days} days left in {season}. Late planting — yields may be lower than predicted."
+    elif remaining_days <= 45:
+        return "caution", f"Note: {remaining_days} days left in {season}. Planting is still viable but monitor closely."
+    else:
+        return "safe", f"{remaining_days} days remaining in {season}. Good time to plant."
 
 # ============================================================================
 # HEADER
@@ -562,6 +604,58 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+        # PLANTING TIMING WARNING
+        current_season, days_left = get_season_remaining_days()
+        warning_level, warning_msg = get_planting_warning(crop_name, current_season, days_left)
+        
+        # Show crop timing info if available
+        timing_key = (crop_name, selected_season)
+        timing_info = models['crop_timing'].get(timing_key, None)
+        
+        if warning_level == "critical":
+            st.markdown(f"""
+            <div style="background: rgba(255,50,50,0.15); border: 2px solid #ff3232; 
+                 border-radius: 12px; padding: 20px; margin: 15px 0;">
+                <h3 style="color: #ff3232; font-size: 1.3em;">Season Timing Alert</h3>
+                <p style="color: #ff6464; font-size: 1.1em; font-weight: 700;">{warning_msg}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        elif warning_level == "warning":
+            st.markdown(f"""
+            <div style="background: rgba(255,165,0,0.15); border: 2px solid #ffa500; 
+                 border-radius: 12px; padding: 20px; margin: 15px 0;">
+                <h3 style="color: #ffa500; font-size: 1.3em;">Season Timing Alert</h3>
+                <p style="color: #ffb84d; font-size: 1.1em; font-weight: 700;">{warning_msg}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        elif warning_level == "caution":
+            st.markdown(f"""
+            <div style="background: rgba(255,255,0,0.1); border: 1px solid rgba(255,255,0,0.3); 
+                 border-radius: 12px; padding: 15px; margin: 15px 0;">
+                <p style="color: #ffff66; font-weight: 600;">{warning_msg}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div style="background: rgba(0,255,136,0.1); border: 1px solid rgba(0,255,136,0.3); 
+                 border-radius: 12px; padding: 15px; margin: 15px 0;">
+                <p style="color: #00ff88; font-weight: 600;">{warning_msg}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Show crop lifecycle timing
+        if timing_info:
+            st.markdown(f"""
+            <div style="background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.2); 
+                 border-radius: 10px; padding: 15px; margin: 10px 0;">
+                <p style="color: #00d4ff; font-weight: 700; margin-bottom: 8px;">
+                    {crop_name} Growing Calendar ({selected_season})</p>
+                <p style="color: #aab;">Transplant: <span style="color: #00ff88;">{timing_info['transplant']}</span> | 
+                   Growth: <span style="color: #00ff88;">{timing_info['growth']}</span> | 
+                   Harvest: <span style="color: #00ff88;">{timing_info['harvest']}</span></p>
+            </div>
+            """, unsafe_allow_html=True)
 
         st.markdown('<div class="result-box"><h3 style="color: #00d4ff; font-size: 1.5em;">Top 5 Alternative Crops</h3>', unsafe_allow_html=True)
         for rank, (c_name, c_conf) in enumerate(top_5_crops, 1):
