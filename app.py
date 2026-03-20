@@ -544,11 +544,6 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
             conf = float(lr_probas[idx]) * 100
             top_5_crops.append((name, conf))
 
-        knn_conf = "N/A"
-        if hasattr(models['crop_model'], 'predict_proba'):
-            knn_probas = models['crop_model'].predict_proba(crop_features_scaled)[0]
-            knn_conf = f"{knn_probas.max():.1f}%"
-
         st.markdown("---")
 
         st.markdown(f"""
@@ -558,7 +553,6 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
                 <div style="flex: 1; min-width: 250px;">
                     <h3 style="color: #aab; font-size: 1.5em; font-weight: 700; margin-bottom: 5px;">Recommended Crop</h3>
                     <div class="big-result" style="color: #00ff88;">{crop_name.upper()}</div>
-                    <div style="color: #00d4ff; font-size: 1.1em;">KNN Confidence: {knn_conf}</div>
                 </div>
                 <div style="flex: 1; min-width: 250px;">
                     <h3 style="color: #aab; font-size: 1.5em; font-weight: 700; margin-bottom: 5px;">Predicted Yield</h3>
