@@ -152,7 +152,7 @@ DISTRICT_COORDS = {
     'Moulvibazar': (24.4829, 91.7774), 'Sunamganj': (25.0658, 91.3950),
     'Brahmanbaria': (23.9571, 91.1112), 'Chandpur': (23.2333, 90.6712),
     'Lakshmipur': (22.9425, 90.8281), 'Noakhali': (22.8696, 91.0995),
-    'Feni': (23.0101, 91.3976), 'Khagrachhari': (23.1194, 91.9847),
+    'Feni': (23.0101, 91.3976), 'Khagrachari': (23.1194, 91.9847),
     'Rangamati': (22.7324, 92.2985), 'Bandarban': (22.1953, 92.2184),
     "Cox'S Bazar": (21.4272, 92.0058), 'Pirojpur': (22.5791, 89.9759),
     'Jhallokati': (22.6406, 90.1987), 'Barguna': (22.1510, 90.1266),
@@ -652,7 +652,7 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
                 <p style="color: #00d4ff; font-weight: 700; margin-bottom: 8px;">
                     {crop_name} Growing Calendar ({selected_season})</p>
                 <p style="color: #aab;">Transplant: <span style="color: #00ff88;">{timing_info['transplant']}</span> | 
-                   Growth: <span style="color: #00ff88;">{timing_info['growth']}</span> | 
+                   Growth: <span style="color: #00ff88;">{'Direct growth (no separate phase)' if 'no need' in str(timing_info['growth']).lower() or 'nan' in str(timing_info['growth']).lower() else timing_info['growth']}</span> | 
                    Harvest: <span style="color: #00ff88;">{timing_info['harvest']}</span></p>
             </div>
             """, unsafe_allow_html=True)
