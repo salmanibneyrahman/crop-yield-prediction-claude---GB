@@ -606,14 +606,27 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
         """, unsafe_allow_html=True)
 
         # PLANTING TIMING WARNING
-        current_season, days_left = get_season_remaining_days()
-        warning_level, warning_msg = get_planting_warning(crop_name, current_season, days_left)
+        current_season, current_days_left = get_season_remaining_days()
+        
+        # If user selected a different season than current, warn them
+        if selected_season != current_season:
+            warning_level = "info"
+            warning_msg = f"You selected {selected_season}, but the current season is {current_season} ({current_days_left} days remaining). Predictions are based on {selected_season} conditions."
+        else:
+            warning_level, warning_msg = get_planting_warning(crop_name, current_season, current_days_left)
         
         # Show crop timing info if available
         timing_key = (crop_name, selected_season)
         timing_info = models['crop_timing'].get(timing_key, None)
         
-        if warning_level == "critical":
+        if warning_level == "info":
+            st.markdown(f"""
+            <div style="background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.4); 
+                 border-radius: 12px; padding: 15px; margin: 15px 0;">
+                <p style="color: #8b8eff; font-weight: 600;">{warning_msg}</p>
+            </div>
+            """, unsafe_allow_html=True)
+        elif warning_level == "critical":
             st.markdown(f"""
             <div style="background: rgba(255,50,50,0.15); border: 2px solid #ff3232; 
                  border-radius: 12px; padding: 20px; margin: 15px 0;">
