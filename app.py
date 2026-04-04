@@ -143,7 +143,7 @@ DISTRICT_COORDS = {
     'Jhenaidah': (23.5448, 89.1726), 'Chuadanga': (23.6402, 88.8418),
     'Kushtia': (23.9013, 89.1206), 'Meherpur': (23.7627, 88.6318),
     'Natore': (24.4206, 89.0006), 'Pabna': (24.0064, 89.2372),
-    'Sirajganj': (24.4534, 89.7000), 'Chapainawabganj': (24.5965, 88.2775),
+    'Sirajganj': (24.4534, 89.7000), 'Chapai Nawabganj': (24.5965, 88.2775),
     'Naogaon': (24.7936, 88.9318), 'Joypurhat': (25.0968, 89.0227),
     'Gaibandha': (25.3288, 89.5286), 'Kurigram': (25.8054, 89.6362),
     'Lalmonirhat': (25.9923, 89.2847), 'Nilphamari': (25.9315, 88.8560),
@@ -571,6 +571,9 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
         crop_pred_code = int(models['crop_model'].predict(crop_features_scaled)[0])
         original_code = int(models['le_reencode'].inverse_transform([crop_pred_code])[0])
         crop_name = str(models['le_crop'].inverse_transform([original_code])[0])
+        
+        crop_name_fixes = {'Taramind': 'Tamarind',}
+        crop_name = crop_name_fixes.get(crop_name, crop_name)
 
         lr_probas = models['lr_display'].predict_proba(crop_features_scaled)[0]
         all_indices = np.argsort(lr_probas)[::-1]  # all crops sorted by probability
