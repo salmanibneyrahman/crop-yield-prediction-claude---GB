@@ -691,7 +691,7 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
                 </div>
             </div>
             """, unsafe_allow_html=True)
-        st.markdown('<p style="color:#888; font-size:0.85em; margin-top:10px;">Primary prediction: KNN | Alternative ranking: Gradient Boosting</p></div>', unsafe_allow_html=True)
+        # st.markdown('<p style="color:#888; font-size:0.85em; margin-top:10px;">Primary prediction: KNN | Alternative ranking: Gradient Boosting</p></div>', unsafe_allow_html=True)
 
         st.markdown('<div class="result-box"><h3 style="color: #00d4ff; font-size: 1.5em;">Production Forecast</h3>', unsafe_allow_html=True)
         pc1, pc2, pc3 = st.columns(3)
@@ -725,7 +725,7 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
 st.markdown("---")
 st.markdown("""
 <div style="text-align:center; padding:20px; color:#666;">
-    <p>Smart Precision Agriculture System | Built with Streamlit</p>
-    <p style="font-size:0.8em;">Powered by Machine Learning | Data: Bangladesh Agricultural Dataset</p>
+    <p>Smart Precision Agriculture System</p>
+    <p style="font-size:0.8em;">Powered by Machine Learning | Data: SPAS-Dataset-BD</p>
 </div>
 """, unsafe_allow_html=True)
