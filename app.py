@@ -503,7 +503,7 @@ with col_right:
         auto_avg_temp = round((st.session_state.t_min + st.session_state.t_max) / 2, 1)
         if not is_auto:
             st.session_state.t_avg = auto_avg_temp
-        avg_temp = st.number_input("Avg Temp (auto-calculated)", key="t_avg")
+        avg_temp = st.number_input("Avg Temp", key="t_avg")
     with tc3:
         max_temp = st.number_input("Max Temp", key="t_max")
 
@@ -515,7 +515,7 @@ with col_right:
         auto_avg_hum = int(round((st.session_state.h_min + st.session_state.h_max) / 2))
         if not is_auto:
             st.session_state.h_avg = auto_avg_hum
-        avg_humidity = st.number_input("Avg Humidity (auto-calculated)", min_value=0, max_value=100, key="h_avg")
+        avg_humidity = st.number_input("Avg Humidity", min_value=0, max_value=100, key="h_avg")
     with hc3:
         max_humidity = st.number_input("Max Humidity", min_value=0, max_value=100, key="h_max")
 
