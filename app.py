@@ -571,9 +571,6 @@ if st.button("Predict Crop and Yield", use_container_width=True, disabled=not (t
         crop_pred_code = int(models['crop_model'].predict(crop_features_scaled)[0])
         original_code = int(models['le_reencode'].inverse_transform([crop_pred_code])[0])
         crop_name = str(models['le_crop'].inverse_transform([original_code])[0])
-        
-        crop_name_fixes = {'Taramind': 'Tamarind',}
-        crop_name = crop_name_fixes.get(crop_name, crop_name)
 
         lr_probas = models['lr_display'].predict_proba(crop_features_scaled)[0]
         all_indices = np.argsort(lr_probas)[::-1]  # all crops sorted by probability
