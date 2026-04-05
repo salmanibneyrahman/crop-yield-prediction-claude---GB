@@ -158,7 +158,7 @@ DISTRICT_COORDS = {
     'Jhallokati': (22.6406, 90.1987), 'Barguna': (22.1510, 90.1266),
     'Patuakhali': (22.3596, 90.3290), 'Bhola': (22.6859, 90.6482),
     'Netrokona': (24.8700, 90.7279), 'Sherpur': (25.0204, 90.0170),
-    'Jamalpur': (24.9375, 89.9372),
+    'Jamalpur': (24.9375, 89.9372), 'Rajbari': (23.7531, 89.6447),
 }
 
 # ============================================================================
@@ -500,7 +500,10 @@ with col_right:
     with tc1:
         min_temp = st.number_input("Min Temp", key="t_min")
     with tc2:
-        avg_temp = st.number_input("Avg Temp", key="t_avg")
+        auto_avg_temp = round((st.session_state.t_min + st.session_state.t_max) / 2, 1)
+        if not is_auto:
+            st.session_state.t_avg = auto_avg_temp
+        avg_temp = st.number_input("Avg Temp (auto-calculated)", key="t_avg")
     with tc3:
         max_temp = st.number_input("Max Temp", key="t_max")
 
@@ -509,7 +512,10 @@ with col_right:
     with hc1:
         min_humidity = st.number_input("Min Humidity", min_value=0, max_value=100, key="h_min")
     with hc2:
-        avg_humidity = st.number_input("Avg Humidity", min_value=0, max_value=100, key="h_avg")
+        auto_avg_hum = int(round((st.session_state.h_min + st.session_state.h_max) / 2))
+        if not is_auto:
+            st.session_state.h_avg = auto_avg_hum
+        avg_humidity = st.number_input("Avg Humidity (auto-calculated)", min_value=0, max_value=100, key="h_avg")
     with hc3:
         max_humidity = st.number_input("Max Humidity", min_value=0, max_value=100, key="h_max")
 
